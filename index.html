@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Digital Pet - Tamagotchi Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #4a4a4a 0%, #2c2c2c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .tamagotchi-container {
+            background: #3a3a3a;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .screen {
+            background: #e8e8e8;
+            border-radius: 15px;
+            padding: 30px;
+            border: 4px solid #999999;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .pet-container {
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pet {
+            font-size: 120px;
+            margin: 30px 0;
+            animation: float 2s ease-in-out infinite;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pet-name {
+            font-size: 24px;
+            color: #2c2c2c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #cccccc;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            color: #2c2c2c;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-bar {
+            background: #666666;
+            height: 24px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s ease;
+        }
+
+        .hunger-fill { background: #4a4a4a; }
+        .happiness-fill { background: #666666; }
+        .health-fill { background: #333333; }
+        .energy-fill { background: #7a7a7a; }
+
+        .stat-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .button {
+            background: #555555;
+            color: white;
+            border: none;
+            padding: 20px 15px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #444444;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .button:hover {
+            background: #444444;
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            transform: translateY(0px);
+        }
+
+        .feed { background: #555555; border-color: #444444; }
+        .feed:hover { background: #444444; }
+
+        .play { background: #666666; border-color: #555555; }
+        .play:hover { background: #555555; }
+
+        .sleep { background: #777777; border-color: #666666; }
+        .sleep:hover { background: #666666; }
+
+        .heal { background: #555555; border-color: #444444; }
+        .heal:hover { background: #444444; }
+
+        .status-message {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .happy { background: #e8e8e8; color: #333333; }
+        .sad { background: #d0d0d0; color: #555555; }
+        .neutral { background: #f0f0f0; color: #444444; }
+
+        .age-info {
+            text-align: center;
+            color: #2c2c2c;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .pet.sleeping {
+            opacity: 0.7;
+            animation: none;
+        }
+
+        .pet.happy {
+            animation: bounce 0.5s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-5px) scale(1.1); }
+        }
+
+        .reset-button {
+            width: 100%;
+            background: #777777;
+            border-color: #666666;
+            margin-top: 10px;
+        }
+
+        .reset-button:hover {
+            background: #666666;
+        }
+
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 400px;
+        }
+
+        .pet-info {
+            background: #4a4a4a;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .pet-info h2 {
+            margin: 0 0 10px 0;
+            color: #f0f0f0;
+            font-size: 24px;
+        }
+
+        .pet-info p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #cccccc;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .tamagotchi-container {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+            
+            .pet {
+                font-size: 100px;
+            }
+            
+            .button-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Translation Game Styles */
+        .translation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .translation-modal.show {
+            display: flex;
+        }
+
+        .translation-content {
+            background: #f0f0f0;
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid #4a4a4a;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .translation-title {
+            color: #2c2c2c;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .french-word {
+            font-size: 36px;
+            color: #444444;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 3px solid #666666;
+        }
+
+        .translation-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 3px solid #cccccc;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            outline: none;
+        }
+
+        .translation-input:focus {
+            border-color: #666666;
+        }
+
+        .translation-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .translation-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn {
+            background: #555555;
+            color: white;
+            border: 3px solid #444444;
+        }
+
+        .submit-btn:hover {
+            background: #444444;
+        }
+
+        .cancel-btn {
+            background: #777777;
+            color: white;
+            border: 3px solid #666666;
+        }
+
+        .cancel-btn:hover {
+            background: #666666;
+        }
+
+        .hint-text {
+            color: #666666;
+            font-size: 14px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.5s ease;
+            z-index: 2000;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.correct {
+            background: #4a4a4a;
+            color: white;
+            border: 3px solid #333333;
+        }
+
+        .notification.incorrect {
+            background: #777777;
+            color: white;
+            border: 3px solid #666666;
+        }
+
+        .notification-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tamagotchi-container">
+        <div class="screen">
+            <div class="pet-container">
+                <div class="pet-name" id="petName">Tama</div>
+                <div class="pet" id="pet" onclick="petClick()">🐣</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">HUNGER</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill hunger-fill" id="hungerBar"></div>
+                        <div class="stat-value" id="hungerValue">50</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">HAPPINESS</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill happiness-fill" id="happinessBar"></div>
+                        <div class="stat-value" id="happinessValue">50</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">HEALTH</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill health-fill" id="healthBar"></div>
+                        <div class="stat-value" id="healthValue">100</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">ENERGY</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill energy-fill" id="energyBar"></div>
+                        <div class="stat-value" id="energyValue">100</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-message neutral" id="statusMessage">
+                Hello! Take care of me! 😊
+            </div>
+        </div>
+        
+        <div class="controls-section">
+            <div class="pet-info">
+                <h2>My Digital Pet</h2>
+                <p><strong>Stage:</strong> <span id="petStage">Baby</span></p>
+                <p><strong>Age:</strong> <span id="age">0</span> days</p>
+                <p><strong>Care Level:</strong> <span id="careLevel">Good</span></p>
+            </div>
+            
+            <div class="buttons">
+                <div class="button-row">
+                    <button class="button feed" onclick="feedPet()">
+                        🍎<br>FEED<br><small>Nouns</small>
+                    </button>
+                    <button class="button play" onclick="playWithPet()">
+                        🎾<br>PLAY<br><small>Verbs</small>
+                    </button>
+                </div>
+                <div class="button-row">
+                    <button class="button sleep" onclick="petSleep()">
+                        😴<br>SLEEP<br><small>Adverbs</small>
+                    </button>
+                    <button class="button heal" onclick="healPet()">
+                        💊<br>HEAL<br><small>Adjectives</small>
+                    </button>
+                </div>
+                
+                <button class="button reset-button" onclick="resetPet()">
+                    🔄 RESET PET
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Translation Game Modal -->
+    <div class="translation-modal" id="translationModal">
+        <div class="translation-content">
+            <div class="translation-title" id="translationTitle">🇫🇷 Translate to Feed! 🍎</div>
+            <div class="french-word" id="frenchWord">pomme</div>
+            <input type="text" class="translation-input" id="translationInput" placeholder="Enter English translation..." maxlength="20">
+            <div class="hint-text">Hint: <span id="translationHint">A red fruit that grows on trees</span></div>
+            <div class="translation-buttons">
+                <button class="translation-btn submit-btn" onclick="submitTranslation()">✓ Submit</button>
+                <button class="translation-btn cancel-btn" onclick="cancelTranslation()">✗ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Element -->
+    <div class="notification" id="notification">
+        <span class="notification-icon" id="notificationIcon">✓</span>
+        <span id="notificationText">Correct!</span>
+    </div>
+
+    <script>
+        // Pet object to store all stats and state
+        let pet = {
+            name: 'Tama',
+            age: 0,
+            hunger: 50,
+            happiness: 50,
+            health: 100,
+            energy: 100,
+            stage: 0, // 0: baby, 1: child, 2: adult
+            sleeping: false,
+            lastUpdate: Date.now()
+        };
+
+        // Pet evolution stages
+        const petStages = ['🐣', '🐱', '🦊', '👑'];
+        const stageNames = ['Baby', 'Child', 'Adult', 'Elder'];
+
+        // French words database for translation games
+        const frenchWords = {
+            nouns: [
+                { french: 'pomme', english: 'apple', hint: 'A red fruit that grows on trees' },
+                { french: 'pain', english: 'bread', hint: 'Baked food made from flour and water' },
+                { french: 'eau', english: 'water', hint: 'Clear liquid essential for life' },
+                { french: 'lait', english: 'milk', hint: 'White liquid from cows' },
+                { french: 'fromage', english: 'cheese', hint: 'Yellow dairy product' },
+                { french: 'viande', english: 'meat', hint: 'Animal protein food' },
+                { french: 'poisson', english: 'fish', hint: 'Swimming animal you can eat' },
+                { french: 'légume', english: 'vegetable', hint: 'Healthy green food like carrots' },
+                { french: 'fruit', english: 'fruit', hint: 'Sweet natural food like oranges' },
+                { french: 'oeuf', english: 'egg', hint: 'Oval food that comes from chickens' },
+                { french: 'riz', english: 'rice', hint: 'Small white grains, popular in Asia' },
+                { french: 'soupe', english: 'soup', hint: 'Liquid food served hot in a bowl' },
+                { french: 'salade', english: 'salad', hint: 'Fresh green leaves you eat raw' },
+                { french: 'gâteau', english: 'cake', hint: 'Sweet dessert for birthdays' },
+                { french: 'chocolat', english: 'chocolate', hint: 'Brown sweet treat' },
+                { french: 'café', english: 'coffee', hint: 'Hot brown drink for energy' },
+                { french: 'thé', english: 'tea', hint: 'Hot drink made with leaves' },
+                { french: 'sucre', english: 'sugar', hint: 'White sweet powder' },
+                { french: 'sel', english: 'salt', hint: 'White seasoning from the sea' },
+                { french: 'beurre', english: 'butter', hint: 'Yellow spread made from cream' },
+                { french: 'orange', english: 'orange', hint: 'Round citrus fruit' },
+                { french: 'banane', english: 'banana', hint: 'Yellow curved fruit' },
+                { french: 'carotte', english: 'carrot', hint: 'Orange root vegetable' },
+                { french: 'tomate', english: 'tomato', hint: 'Red round fruit used in cooking' },
+                { french: 'patate', english: 'potato', hint: 'Brown vegetable that grows underground' },
+                { french: 'oignon', english: 'onion', hint: 'Vegetable that makes you cry when cutting' },
+                { french: 'ail', english: 'garlic', hint: 'Strong-smelling white bulb for cooking' },
+                { french: 'citron', english: 'lemon', hint: 'Yellow sour citrus fruit' },
+                { french: 'fraise', english: 'strawberry', hint: 'Small red berry with seeds outside' },
+                { french: 'raisin', english: 'grape', hint: 'Small round fruit that grows in bunches' }
+            ],
+            verbs: [
+                { french: 'manger', english: 'to eat', hint: 'What you do with food' },
+                { french: 'boire', english: 'to drink', hint: 'What you do with water' },
+                { french: 'courir', english: 'to run', hint: 'Move quickly with your legs' },
+                { french: 'sauter', english: 'to jump', hint: 'Go up in the air with your feet' },
+                { french: 'danser', english: 'to dance', hint: 'Move to music' },
+                { french: 'chanter', english: 'to sing', hint: 'Make music with your voice' },
+                { french: 'jouer', english: 'to play', hint: 'Have fun with games' },
+                { french: 'regarder', english: 'to watch', hint: 'Use your eyes to see' },
+                { french: 'écouter', english: 'to listen', hint: 'Use your ears to hear' },
+                { french: 'marcher', english: 'to walk', hint: 'Move slowly with your feet' },
+                { french: 'nager', english: 'to swim', hint: 'Move through water' },
+                { french: 'voler', english: 'to fly', hint: 'Move through the air' },
+                { french: 'rire', english: 'to laugh', hint: 'What you do when something is funny' },
+                { french: 'dormir', english: 'to sleep', hint: 'Rest at night' },
+                { french: 'parler', english: 'to speak', hint: 'Use words to communicate' },
+                { french: 'étudier', english: 'to study', hint: 'Learn from books' },
+                { french: 'travailler', english: 'to work', hint: 'Do your job' },
+                { french: 'aimer', english: 'to love', hint: 'Feel affection for someone' },
+                { french: 'acheter', english: 'to buy', hint: 'Purchase something with money' },
+                { french: 'vendre', english: 'to sell', hint: 'Give something for money' },
+                { french: 'conduire', english: 'to drive', hint: 'Control a car' },
+                { french: 'lire', english: 'to read', hint: 'Look at words in a book' },
+                { french: 'écrire', english: 'to write', hint: 'Make words with a pen' },
+                { french: 'dessiner', english: 'to draw', hint: 'Make pictures with pencil' },
+                { french: 'cuisiner', english: 'to cook', hint: 'Prepare food in the kitchen' },
+                { french: 'nettoyer', english: 'to clean', hint: 'Make something not dirty' },
+                { french: 'ouvrir', english: 'to open', hint: 'Make something not closed' },
+                { french: 'fermer', english: 'to close', hint: 'Make something not open' },
+                { french: 'chercher', english: 'to search', hint: 'Look for something' },
+                { french: 'trouver', english: 'to find', hint: 'Discover something you were looking for' }
+            ],
+            adverbs: [
+                { french: 'rapidement', english: 'quickly', hint: 'In a fast way' },
+                { french: 'lentement', english: 'slowly', hint: 'In a slow way' },
+                { french: 'doucement', english: 'gently', hint: 'In a soft, careful way' },
+                { french: 'fortement', english: 'strongly', hint: 'With great force' },
+                { french: 'silencieusement', english: 'quietly', hint: 'Without making noise' },
+                { french: 'joyeusement', english: 'happily', hint: 'In a cheerful way' },
+                { french: 'tristement', english: 'sadly', hint: 'In a sorrowful way' },
+                { french: 'facilement', english: 'easily', hint: 'Without difficulty' },
+                { french: 'difficilement', english: 'difficultly', hint: 'With trouble' },
+                { french: 'souvent', english: 'often', hint: 'Many times' },
+                { french: 'rarement', english: 'rarely', hint: 'Not very often' },
+                { french: 'toujours', english: 'always', hint: 'All the time' },
+                { french: 'jamais', english: 'never', hint: 'Not ever' },
+                { french: 'maintenant', english: 'now', hint: 'At this moment' },
+                { french: 'hier', english: 'yesterday', hint: 'The day before today' },
+                { french: 'demain', english: 'tomorrow', hint: 'The day after today' },
+                { french: 'aujourd\'hui', english: 'today', hint: 'This current day' },
+                { french: 'bientôt', english: 'soon', hint: 'In a short time' },
+                { french: 'tard', english: 'late', hint: 'After the usual time' },
+                { french: 'tôt', english: 'early', hint: 'Before the usual time' },
+                { french: 'beaucoup', english: 'much', hint: 'A large amount' },
+                { french: 'peu', english: 'little', hint: 'A small amount' },
+                { french: 'très', english: 'very', hint: 'To a high degree' },
+                { french: 'assez', english: 'enough', hint: 'Sufficient amount' },
+                { french: 'trop', english: 'too', hint: 'More than needed' },
+                { french: 'bien', english: 'well', hint: 'In a good way' },
+                { french: 'mal', english: 'badly', hint: 'In a poor way' },
+                { french: 'ensemble', english: 'together', hint: 'With each other' },
+                { french: 'partout', english: 'everywhere', hint: 'In all places' },
+                { french: 'nulle part', english: 'nowhere', hint: 'In no place' }
+            ],
+            adjectives: [
+                { french: 'grand', english: 'big', hint: 'Large in size' },
+                { french: 'petit', english: 'small', hint: 'Little in size' },
+                { french: 'beau', english: 'beautiful', hint: 'Nice to look at' },
+                { french: 'laid', english: 'ugly', hint: 'Not nice to look at' },
+                { french: 'chaud', english: 'hot', hint: 'High temperature' },
+                { french: 'froid', english: 'cold', hint: 'Low temperature' },
+                { french: 'heureux', english: 'happy', hint: 'Feeling joy' },
+                { french: 'triste', english: 'sad', hint: 'Feeling sorrow' },
+                { french: 'rapide', english: 'fast', hint: 'Moving quickly' },
+                { french: 'lent', english: 'slow', hint: 'Moving slowly' },
+                { french: 'fort', english: 'strong', hint: 'Having power' },
+                { french: 'faible', english: 'weak', hint: 'Not strong' },
+                { french: 'jeune', english: 'young', hint: 'Not old' },
+                { french: 'vieux', english: 'old', hint: 'Having lived for a long time' },
+                { french: 'nouveau', english: 'new', hint: 'Recently made' },
+                { french: 'blanc', english: 'white', hint: 'The color of snow' },
+                { french: 'noir', english: 'black', hint: 'The color of night' },
+                { french: 'rouge', english: 'red', hint: 'The color of blood' },
+                { french: 'bleu', english: 'blue', hint: 'The color of the sky' },
+                { french: 'vert', english: 'green', hint: 'The color of grass' },
+                { french: 'jaune', english: 'yellow', hint: 'The color of the sun' },
+                { french: 'violet', english: 'purple', hint: 'The color of lavender' },
+                { french: 'orange', english: 'orange', hint: 'The color of carrots' },
+                { french: 'rose', english: 'pink', hint: 'Light red color' },
+                { french: 'gris', english: 'gray', hint: 'Color between black and white' },
+                { french: 'lourd', english: 'heavy', hint: 'Having much weight' },
+                { french: 'léger', english: 'light', hint: 'Not heavy' },
+                { french: 'dur', english: 'hard', hint: 'Not soft' },
+                { french: 'mou', english: 'soft', hint: 'Not hard' },
+                { french: 'propre', english: 'clean', hint: 'Not dirty' },
+                { french: 'sale', english: 'dirty', hint: 'Not clean' },
+                { french: 'riche', english: 'rich', hint: 'Having lots of money' },
+                { french: 'pauvre', english: 'poor', hint: 'Not having much money' },
+                { french: 'intelligent', english: 'smart', hint: 'Having good thinking ability' },
+                { french: 'stupide', english: 'stupid', hint: 'Not smart' }
+            ]
+        };
+
+        let currentWord = null;
+        let currentQuizType = null;
+
+        // Notification system
+        function showNotification(text, isCorrect, icon = null) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationIcon = document.getElementById('notificationIcon');
+            
+            // Set content
+            notificationText.textContent = text;
+            notificationIcon.textContent = icon || (isCorrect ? '✓' : '✗');
+            
+            // Set style based on correctness
+            notification.className = 'notification ' + (isCorrect ? 'correct' : 'incorrect');
+            
+            // Show notification
+            notification.classList.add('show');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load saved pet data
+        function loadPet() {
+            const savedPet = localStorage.getItem('tamagotchiPet');
+            if (savedPet) {
+                pet = { ...pet, ...JSON.parse(savedPet) };
+                
+                // Handle time passage while away
+                const timePassed = Date.now() - pet.lastUpdate;
+                const minutesPassed = Math.floor(timePassed / (1000 * 60));
+                
+                if (minutesPassed > 0) {
+                    pet.hunger = Math.max(0, pet.hunger - minutesPassed * 2);
+                    pet.happiness = Math.max(0, pet.happiness - minutesPassed);
+                    pet.energy = Math.max(0, pet.energy - minutesPassed);
+                    
+                    if (pet.hunger < 20 || pet.happiness < 20 || pet.energy < 20) {
+                        pet.health = Math.max(0, pet.health - minutesPassed);
+                    }
+                }
+                
+                pet.lastUpdate = Date.now();
+            }
+            updateDisplay();
+        }
+
+        // Save pet data
+        function savePet() {
+            pet.lastUpdate = Date.now();
+            localStorage.setItem('tamagotchiPet', JSON.stringify(pet));
+        }
+
+        // Update all display elements
+        function updateDisplay() {
+            document.getElementById('petName').textContent = pet.name;
+            document.getElementById('age').textContent = pet.age;
+            document.getElementById('petStage').textContent = stageNames[pet.stage];
+            
+            // Calculate and display care level
+            const totalCare = (pet.happiness + pet.health + (100 - pet.hunger) + pet.energy) / 4;
+            let careLevel = 'Poor';
+            if (totalCare > 80) careLevel = 'Excellent';
+            else if (totalCare > 60) careLevel = 'Good';
+            else if (totalCare > 40) careLevel = 'Fair';
+            document.getElementById('careLevel').textContent = careLevel;
+            
+            // Update pet appearance based on stage
+            const petElement = document.getElementById('pet');
+            petElement.textContent = petStages[pet.stage];
+            
+            // Update sleeping state
+            if (pet.sleeping) {
+                petElement.classList.add('sleeping');
+                petElement.textContent = '😴';
+            } else {
+                petElement.classList.remove('sleeping');
+                if (pet.happiness > 70) {
+                    petElement.classList.add('happy');
+                } else {
+                    petElement.classList.remove('happy');
+                }
+            }
+            
+            // Update stats
+            updateStat('hunger', pet.hunger);
+            updateStat('happiness', pet.happiness);
+            updateStat('health', pet.health);
+            updateStat('energy', pet.energy);
+            
+            // Update status message
+            updateStatusMessage();
+            
+            // Check for evolution
+            checkEvolution();
+            
+            savePet();
+        }
+
+        // Update individual stat display
+        function updateStat(statName, value) {
+            const bar = document.getElementById(statName + 'Bar');
+            const valueElement = document.getElementById(statName + 'Value');
+            
+            bar.style.width = value + '%';
+            valueElement.textContent = Math.round(value);
+        }
+
+        // Update status message based on pet's condition
+        function updateStatusMessage() {
+            const messageElement = document.getElementById('statusMessage');
+            let message = '';
+            let className = 'neutral';
+            
+            if (pet.sleeping) {
+                message = 'Zzz... I\'m sleeping peacefully 😴';
+                className = 'neutral';
+            } else if (pet.health < 30) {
+                message = 'I feel very sick... please help me! 🤒';
+                className = 'sad';
+            } else if (pet.hunger < 20) {
+                message = 'I\'m so hungry! Please feed me! 😢';
+                className = 'sad';
+            } else if (pet.energy < 20) {
+                message = 'I\'m exhausted... I need to rest 😪';
+                className = 'sad';
+            } else if (pet.happiness < 20) {
+                message = 'I\'m feeling sad... play with me? 😞';
+                className = 'sad';
+            } else if (pet.happiness > 80 && pet.health > 80) {
+                message = 'I\'m so happy and healthy! 😄';
+                className = 'happy';
+            } else if (pet.hunger > 80) {
+                message = 'I\'m so full! Thank you! 😊';
+                className = 'happy';
+            } else {
+                message = 'I\'m doing okay! Thanks for taking care of me! 😊';
+                className = 'neutral';
+            }
+            
+            messageElement.textContent = message;
+            messageElement.className = 'status-message ' + className;
+        }
+
+        // Check if pet should evolve
+        function checkEvolution() {
+            const totalCare = (pet.happiness + pet.health + (100 - pet.hunger)) / 3;
+            
+            if (pet.age >= 3 && pet.stage === 0 && totalCare > 60) {
+                pet.stage = 1;
+                showMessage('Your pet has evolved into a child! 🎉');
+            } else if (pet.age >= 7 && pet.stage === 1 && totalCare > 70) {
+                pet.stage = 2;
+                showMessage('Your pet has evolved into an adult! 🎉');
+            } else if (pet.age >= 15 && pet.stage === 2 && totalCare > 80) {
+                pet.stage = 3;
+                showMessage('Your pet has become an elder! 👑');
+            }
+        }
+
+        // Show temporary message
+        function showMessage(text) {
+            const messageElement = document.getElementById('statusMessage');
+            const originalMessage = messageElement.textContent;
+            const originalClass = messageElement.className;
+            
+            messageElement.textContent = text;
+            messageElement.className = 'status-message happy';
+            
+            setTimeout(() => {
+                messageElement.textContent = originalMessage;
+                messageElement.className = originalClass;
+            }, 3000);
+        }
+
+        // Pet actions
+        function feedPet() {
+            if (pet.sleeping) {
+                showMessage('Shh... I\'m sleeping! 😴');
+                return;
+            }
+            
+            // Removed hunger limit for testing
+            // Start translation game for nouns
+            currentQuizType = 'nouns';
+            startTranslationGame();
+        }
+
+        function startTranslationGame() {
+            // Pick a random French word from the appropriate category
+            const wordList = frenchWords[currentQuizType];
+            currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+            
+            // Update modal content based on quiz type
+            let title = '';
+            switch(currentQuizType) {
+                case 'nouns':
+                    title = '🍎 Translate to Feed! (Nouns)';
+                    break;
+                case 'verbs':
+                    title = '🎾 Translate to Play! (Verbs)';
+                    break;
+                case 'adverbs':
+                    title = '😴 Translate to Sleep! (Adverbs)';
+                    break;
+                case 'adjectives':
+                    title = '💊 Translate to Heal! (Adjectives)';
+                    break;
+            }
+            
+            document.getElementById('translationTitle').textContent = title;
+            document.getElementById('frenchWord').textContent = currentWord.french;
+            document.getElementById('translationHint').textContent = currentWord.hint;
+            document.getElementById('translationInput').value = '';
+            
+            // Show modal
+            document.getElementById('translationModal').classList.add('show');
+            document.getElementById('translationInput').focus();
+        }
+
+        function submitTranslation() {
+            const userAnswer = document.getElementById('translationInput').value.trim().toLowerCase();
+            const correctAnswer = currentWord.english.toLowerCase();
+            
+            // Hide modal first
+            document.getElementById('translationModal').classList.remove('show');
+            
+            if (userAnswer === correctAnswer) {
+                // Show success notification
+                showNotification('Correct! Well done! 🎉', true, '🎉');
+                
+                // Correct! Perform the action based on quiz type
+                switch(currentQuizType) {
+                    case 'nouns':
+                        pet.hunger = Math.min(100, pet.hunger + 25);
+                        pet.happiness = Math.min(100, pet.happiness + 10);
+                        pet.health = Math.min(100, pet.health + 2);
+                        showMessage('Correct! 🎉 Yummy! Thank you for the food! 😋');
+                        break;
+                    case 'verbs':
+                        pet.happiness = Math.min(100, pet.happiness + 20);
+                        pet.energy = Math.max(0, pet.energy - 15);
+                        pet.hunger = Math.max(0, pet.hunger - 10);
+                        showMessage('Correct! 🎉 That was so much fun! 😄');
+                        break;
+                    case 'adverbs':
+                        if (pet.sleeping) {
+                            pet.sleeping = false;
+                            pet.energy = Math.min(100, pet.energy + 30);
+                            pet.health = Math.min(100, pet.health + 10);
+                            showMessage('Correct! 🎉 Good morning! I feel refreshed! 😊');
+                        } else {
+                            pet.sleeping = true;
+                            showMessage('Correct! 🎉 Good night! 😴');
+                        }
+                        break;
+                    case 'adjectives':
+                        pet.health = Math.min(100, pet.health + 30);
+                        pet.happiness = Math.min(100, pet.happiness + 10);
+                        showMessage('Correct! 🎉 I feel much better now! �');
+                        break;
+                }
+            } else {
+                // Show incorrect notification with correct answer
+                showNotification(`Wrong! "${currentWord.french}" = "${currentWord.english}"`, false, '📚');
+                
+                // Wrong answer
+                showMessage(`Try again next time! I still appreciate the effort! 😊`);
+                
+                // Still give a small reward for trying
+                pet.happiness = Math.min(100, pet.happiness + 2);
+            }
+            
+            updateDisplay();
+        }
+
+        function cancelTranslation() {
+            document.getElementById('translationModal').classList.remove('show');
+            showMessage('Maybe next time! I\'m still hungry though... 😢');
+        }
+
+        // Add Enter key support for translation input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('translationInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitTranslation();
+                }
+            });
+        });
+
+        function playWithPet() {
+            if (pet.sleeping) {
+                showMessage('Shh... I\'m sleeping! 😴');
+                return;
+            }
+            
+            // Removed energy limit for testing
+            // Start translation game for verbs
+            currentQuizType = 'verbs';
+            startTranslationGame();
+        }
+
+        function petSleep() {
+            // Start translation game for adverbs
+            currentQuizType = 'adverbs';
+            startTranslationGame();
+        }
+
+        function healPet() {
+            if (pet.sleeping) {
+                showMessage('Shh... I\'m sleeping! 😴');
+                return;
+            }
+            
+            // Removed health limit for testing
+            // Start translation game for adjectives
+            currentQuizType = 'adjectives';
+            startTranslationGame();
+        }
+
+        function petClick() {
+            if (pet.sleeping) {
+                showMessage('Shh... I\'m sleeping! 😴');
+                return;
+            }
+            
+            pet.happiness = Math.min(100, pet.happiness + 5);
+            showMessage('Hehe! That tickles! 😄');
+            updateDisplay();
+        }
+
+        function resetPet() {
+            if (confirm('Are you sure you want to reset your pet? This cannot be undone!')) {
+                localStorage.removeItem('tamagotchiPet');
+                pet = {
+                    name: 'Tama',
+                    age: 0,
+                    hunger: 50,
+                    happiness: 50,
+                    health: 100,
+                    energy: 100,
+                    stage: 0,
+                    sleeping: false,
+                    lastUpdate: Date.now()
+                };
+                updateDisplay();
+                showMessage('Hello! I\'m your new pet! 😊');
+            }
+        }
+
+        // Game loop - runs every minute
+        function gameLoop() {
+            if (!pet.sleeping) {
+                // Decrease stats over time (slower rate)
+                pet.hunger = Math.max(0, pet.hunger - 1);
+                pet.happiness = Math.max(0, pet.happiness - 0.5);
+                pet.energy = Math.max(0, pet.energy - 0.5);
+                
+                // Health decreases if other stats are low
+                if (pet.hunger < 20 || pet.happiness < 20 || pet.energy < 20) {
+                    pet.health = Math.max(0, pet.health - 1);
+                }
+            }
+            
+            updateDisplay();
+        }
+
+        // Age the pet every day (for demo, every 5 minutes)
+        function agePet() {
+            pet.age++;
+            showMessage(`Happy birthday! I'm now ${pet.age} days old! 🎂`);
+            updateDisplay();
+        }
+
+        // Initialize the game
+        loadPet();
+
+        // Set up game intervals
+        setInterval(gameLoop, 60000); // Every minute
+        setInterval(agePet, 300000); // Every 5 minutes (represents 1 day)
+
+        // Save before page unload
+        window.addEventListener('beforeunload', savePet);
+    </script>
+</body>
+</html>
