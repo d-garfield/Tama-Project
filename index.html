@@ -376,6 +376,48 @@
             font-style: italic;
         }
 
+        /* Hint Toggle Styles */
+        .hint-toggle-container {
+            background: #4a4a4a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: white;
+        }
+
+        .hint-toggle-label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #cccccc;
+        }
+
+        .hint-toggle {
+            background: #555555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #444444;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .hint-toggle:hover {
+            background: #666666;
+        }
+
+        .hint-toggle.hints-enabled {
+            background: #333333;
+            border-color: #222222;
+        }
+
+        .hint-text.hidden {
+            display: none;
+        }
+
         /* Notification Styles */
         .notification {
             position: fixed;
@@ -469,6 +511,13 @@
                 <p><strong>Care Level:</strong> <span id="careLevel">Good</span></p>
             </div>
             
+            <div class="hint-toggle-container">
+                <div class="hint-toggle-label">Translation Hints</div>
+                <button class="hint-toggle hints-enabled" id="hintToggleMain" onclick="toggleHints()">
+                    💡 Hints ON
+                </button>
+            </div>
+            
             <div class="buttons">
                 <div class="button-row">
                     <button class="button feed" onclick="feedPet()">
@@ -500,7 +549,7 @@
             <div class="translation-title" id="translationTitle">🇫🇷 Translate to Feed! 🍎</div>
             <div class="french-word" id="frenchWord">pomme</div>
             <input type="text" class="translation-input" id="translationInput" placeholder="Enter English translation..." maxlength="20">
-            <div class="hint-text">Hint: <span id="translationHint">A red fruit that grows on trees</span></div>
+            <div class="hint-text" id="hintText">Hint: <span id="translationHint">A red fruit that grows on trees</span></div>
             <div class="translation-buttons">
                 <button class="translation-btn submit-btn" onclick="submitTranslation()">✓ Submit</button>
                 <button class="translation-btn cancel-btn" onclick="cancelTranslation()">✗ Cancel</button>
@@ -671,6 +720,7 @@
 
         let currentWord = null;
         let currentQuizType = null;
+        let hintsEnabled = true; // Track if hints should be shown
 
         // Notification system
         function showNotification(text, isCorrect, icon = null) {
@@ -692,6 +742,20 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
+        }
+
+        // Toggle hints function
+        function toggleHints() {
+            hintsEnabled = !hintsEnabled;
+            const hintToggle = document.getElementById('hintToggleMain');
+            
+            if (hintsEnabled) {
+                hintToggle.textContent = '💡 Hints ON';
+                hintToggle.classList.add('hints-enabled');
+            } else {
+                hintToggle.textContent = '💡 Hints OFF';
+                hintToggle.classList.remove('hints-enabled');
+            }
         }
 
         // Load saved pet data
@@ -886,6 +950,14 @@
             document.getElementById('frenchWord').textContent = currentWord.french;
             document.getElementById('translationHint').textContent = currentWord.hint;
             document.getElementById('translationInput').value = '';
+            
+            // Control hint visibility based on toggle setting
+            const hintText = document.getElementById('hintText');
+            if (hintsEnabled) {
+                hintText.classList.remove('hidden');
+            } else {
+                hintText.classList.add('hidden');
+            }
             
             // Show modal
             document.getElementById('translationModal').classList.add('show');
