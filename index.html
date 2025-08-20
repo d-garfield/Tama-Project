@@ -464,7 +464,7 @@
         <div class="screen">
             <div class="pet-container">
                 <div class="pet-name" id="petName">Tama</div>
-                <div class="pet" id="pet" onclick="petClick()">🐣</div>
+                <div class="pet" id="pet" onclick="petClick()">o.o</div>
             </div>
             
             <div class="stats">
@@ -499,7 +499,7 @@
             </div>
             
             <div class="status-message neutral" id="statusMessage">
-                Hello! Take care of me! 😊
+                Hello! Take care of me! :)
             </div>
         </div>
         
@@ -514,30 +514,30 @@
             <div class="hint-toggle-container">
                 <div class="hint-toggle-label">Translation Hints</div>
                 <button class="hint-toggle hints-enabled" id="hintToggleMain" onclick="toggleHints()">
-                    💡 Hints ON
+                    [*] Hints ON
                 </button>
             </div>
             
             <div class="buttons">
                 <div class="button-row">
                     <button class="button feed" onclick="feedPet()">
-                        🍎<br>FEED<br><small>Nouns</small>
+                        [F]<br>FEED<br><small>Nouns</small>
                     </button>
                     <button class="button play" onclick="playWithPet()">
-                        🎾<br>PLAY<br><small>Verbs</small>
+                        [P]<br>PLAY<br><small>Verbs</small>
                     </button>
                 </div>
                 <div class="button-row">
                     <button class="button sleep" onclick="petSleep()">
-                        😴<br>SLEEP<br><small>Adverbs</small>
+                        [S]<br>SLEEP<br><small>Adverbs</small>
                     </button>
                     <button class="button heal" onclick="healPet()">
-                        💊<br>HEAL<br><small>Adjectives</small>
+                        [H]<br>HEAL<br><small>Adjectives</small>
                     </button>
                 </div>
                 
                 <button class="button reset-button" onclick="resetPet()">
-                    🔄 RESET PET
+                    [R] RESET PET
                 </button>
             </div>
         </div>
@@ -546,20 +546,20 @@
     <!-- Translation Game Modal -->
     <div class="translation-modal" id="translationModal">
         <div class="translation-content">
-            <div class="translation-title" id="translationTitle">🇫🇷 Translate to Feed! 🍎</div>
+            <div class="translation-title" id="translationTitle">[FR] Translate to Feed! [F]</div>
             <div class="french-word" id="frenchWord">pomme</div>
             <input type="text" class="translation-input" id="translationInput" placeholder="Enter English translation..." maxlength="20">
             <div class="hint-text" id="hintText">Hint: <span id="translationHint">A red fruit that grows on trees</span></div>
             <div class="translation-buttons">
-                <button class="translation-btn submit-btn" onclick="submitTranslation()">✓ Submit</button>
-                <button class="translation-btn cancel-btn" onclick="cancelTranslation()">✗ Cancel</button>
+                <button class="translation-btn submit-btn" onclick="submitTranslation()">[OK] Submit</button>
+                <button class="translation-btn cancel-btn" onclick="cancelTranslation()">[X] Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- Notification Element -->
     <div class="notification" id="notification">
-        <span class="notification-icon" id="notificationIcon">✓</span>
+        <span class="notification-icon" id="notificationIcon">[OK]</span>
         <span id="notificationText">Correct!</span>
     </div>
 
@@ -578,7 +578,7 @@
         };
 
         // Pet evolution stages
-        const petStages = ['🐣', '🐱', '🦊', '👑'];
+        const petStages = ['o.o', '(^.^)', '(◕‿◕)', '[@]'];
         const stageNames = ['Baby', 'Child', 'Adult', 'Elder'];
 
         // French words database for translation games
@@ -730,7 +730,7 @@
             
             // Set content
             notificationText.textContent = text;
-            notificationIcon.textContent = icon || (isCorrect ? '✓' : '✗');
+            notificationIcon.textContent = icon || (isCorrect ? '[OK]' : '[X]');
             
             // Set style based on correctness
             notification.className = 'notification ' + (isCorrect ? 'correct' : 'incorrect');
@@ -750,10 +750,10 @@
             const hintToggle = document.getElementById('hintToggleMain');
             
             if (hintsEnabled) {
-                hintToggle.textContent = '💡 Hints ON';
+                hintToggle.textContent = '[*] Hints ON';
                 hintToggle.classList.add('hints-enabled');
             } else {
-                hintToggle.textContent = '💡 Hints OFF';
+                hintToggle.textContent = '[*] Hints OFF';
                 hintToggle.classList.remove('hints-enabled');
             }
         }
@@ -810,7 +810,7 @@
             // Update sleeping state
             if (pet.sleeping) {
                 petElement.classList.add('sleeping');
-                petElement.textContent = '😴';
+                petElement.textContent = 'z.z';
             } else {
                 petElement.classList.remove('sleeping');
                 if (pet.happiness > 70) {
@@ -851,28 +851,28 @@
             let className = 'neutral';
             
             if (pet.sleeping) {
-                message = 'Zzz... I\'m sleeping peacefully 😴';
+                message = 'Zzz... I\'m sleeping peacefully z.z';
                 className = 'neutral';
             } else if (pet.health < 30) {
-                message = 'I feel very sick... please help me! 🤒';
+                message = 'I feel very sick... please help me! x.x';
                 className = 'sad';
             } else if (pet.hunger < 20) {
-                message = 'I\'m so hungry! Please feed me! 😢';
+                message = 'I\'m so hungry! Please feed me! :(';
                 className = 'sad';
             } else if (pet.energy < 20) {
-                message = 'I\'m exhausted... I need to rest 😪';
+                message = 'I\'m exhausted... I need to rest @.@';
                 className = 'sad';
             } else if (pet.happiness < 20) {
-                message = 'I\'m feeling sad... play with me? 😞';
+                message = 'I\'m feeling sad... play with me? :(';
                 className = 'sad';
             } else if (pet.happiness > 80 && pet.health > 80) {
-                message = 'I\'m so happy and healthy! 😄';
+                message = 'I\'m so happy and healthy! :D';
                 className = 'happy';
             } else if (pet.hunger > 80) {
-                message = 'I\'m so full! Thank you! 😊';
+                message = 'I\'m so full! Thank you! :)';
                 className = 'happy';
             } else {
-                message = 'I\'m doing okay! Thanks for taking care of me! 😊';
+                message = 'I\'m doing okay! Thanks for taking care of me! :)';
                 className = 'neutral';
             }
             
@@ -886,13 +886,13 @@
             
             if (pet.age >= 3 && pet.stage === 0 && totalCare > 60) {
                 pet.stage = 1;
-                showMessage('Your pet has evolved into a child! 🎉');
+                showMessage('Your pet has evolved into a child! :D');
             } else if (pet.age >= 7 && pet.stage === 1 && totalCare > 70) {
                 pet.stage = 2;
-                showMessage('Your pet has evolved into an adult! 🎉');
+                showMessage('Your pet has evolved into an adult! :D');
             } else if (pet.age >= 15 && pet.stage === 2 && totalCare > 80) {
                 pet.stage = 3;
-                showMessage('Your pet has become an elder! 👑');
+                showMessage('Your pet has become an elder! [@]');
             }
         }
 
@@ -914,7 +914,7 @@
         // Pet actions
         function feedPet() {
             if (pet.sleeping) {
-                showMessage('Shh... I\'m sleeping! 😴');
+                showMessage('Shh... I\'m sleeping! z.z');
                 return;
             }
             
@@ -933,16 +933,16 @@
             let title = '';
             switch(currentQuizType) {
                 case 'nouns':
-                    title = '🍎 Translate to Feed! (Nouns)';
+                    title = '[FR] Translate to Feed! [F]';
                     break;
                 case 'verbs':
-                    title = '🎾 Translate to Play! (Verbs)';
+                    title = '[FR] Translate to Play! [P]';
                     break;
                 case 'adverbs':
-                    title = '😴 Translate to Sleep! (Adverbs)';
+                    title = '[FR] Translate to Sleep! [S]';
                     break;
                 case 'adjectives':
-                    title = '💊 Translate to Heal! (Adjectives)';
+                    title = '[FR] Translate to Heal! [H]';
                     break;
             }
             
@@ -973,7 +973,7 @@
             
             if (userAnswer === correctAnswer) {
                 // Show success notification
-                showNotification('Correct! Well done! 🎉', true, '🎉');
+                showNotification('Correct! Well done! :D', true, '[+]');
                 
                 // Correct! Perform the action based on quiz type
                 switch(currentQuizType) {
@@ -981,23 +981,23 @@
                         pet.hunger = Math.min(100, pet.hunger + 25);
                         pet.happiness = Math.min(100, pet.happiness + 10);
                         pet.health = Math.min(100, pet.health + 2);
-                        showMessage('Correct! 🎉 Yummy! Thank you for the food! 😋');
+                        showMessage('Yummy! Thank you for the food! :P');
                         break;
                     case 'verbs':
                         pet.happiness = Math.min(100, pet.happiness + 20);
                         pet.energy = Math.max(0, pet.energy - 15);
                         pet.hunger = Math.max(0, pet.hunger - 10);
-                        showMessage('Correct! 🎉 That was so much fun! 😄');
+                        showMessage('That was so much fun! :D');
                         break;
                     case 'adverbs':
                         if (pet.sleeping) {
                             pet.sleeping = false;
                             pet.energy = Math.min(100, pet.energy + 30);
                             pet.health = Math.min(100, pet.health + 10);
-                            showMessage('Correct! 🎉 Good morning! I feel refreshed! 😊');
+                            showMessage('Good morning! I feel refreshed! :)');
                         } else {
                             pet.sleeping = true;
-                            showMessage('Correct! 🎉 Good night! 😴');
+                            showMessage('Good night! z.z');
                         }
                         break;
                     case 'adjectives':
@@ -1008,10 +1008,10 @@
                 }
             } else {
                 // Show incorrect notification with correct answer
-                showNotification(`Wrong! "${currentWord.french}" = "${currentWord.english}"`, false, '📚');
+                showNotification(`Wrong! "${currentWord.french}" = "${currentWord.english}"`, false, '[?]');
                 
                 // Wrong answer
-                showMessage(`Try again next time! I still appreciate the effort! 😊`);
+                showMessage(`Try again next time! I still appreciate the effort! :)`);
                 
                 // Still give a small reward for trying
                 pet.happiness = Math.min(100, pet.happiness + 2);
@@ -1022,7 +1022,7 @@
 
         function cancelTranslation() {
             document.getElementById('translationModal').classList.remove('show');
-            showMessage('Maybe next time! I\'m still hungry though... 😢');
+            showMessage('Maybe next time! I\'m still hungry though... :(');
         }
 
         // Add Enter key support for translation input
@@ -1036,7 +1036,7 @@
 
         function playWithPet() {
             if (pet.sleeping) {
-                showMessage('Shh... I\'m sleeping! 😴');
+                showMessage('Shh... I\'m sleeping! z.z');
                 return;
             }
             
@@ -1054,7 +1054,7 @@
 
         function healPet() {
             if (pet.sleeping) {
-                showMessage('Shh... I\'m sleeping! 😴');
+                showMessage('Shh... I\'m sleeping! z.z');
                 return;
             }
             
@@ -1066,12 +1066,12 @@
 
         function petClick() {
             if (pet.sleeping) {
-                showMessage('Shh... I\'m sleeping! 😴');
+                showMessage('Shh... I\'m sleeping! z.z');
                 return;
             }
             
             pet.happiness = Math.min(100, pet.happiness + 5);
-            showMessage('Hehe! That tickles! 😄');
+            showMessage('Hehe! That tickles! :D');
             updateDisplay();
         }
 
@@ -1090,7 +1090,7 @@
                     lastUpdate: Date.now()
                 };
                 updateDisplay();
-                showMessage('Hello! I\'m your new pet! 😊');
+                showMessage('Hello! I\'m your new pet! :)');
             }
         }
 
@@ -1114,7 +1114,7 @@
         // Age the pet every day (for demo, every 5 minutes)
         function agePet() {
             pet.age++;
-            showMessage(`Happy birthday! I'm now ${pet.age} days old! 🎂`);
+            showMessage(`Happy birthday! I'm now ${pet.age} days old! :D`);
             updateDisplay();
         }
 
