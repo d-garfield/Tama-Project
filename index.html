@@ -457,6 +457,61 @@
             font-size: 24px;
             margin-right: 10px;
         }
+
+        /* Footer Styles */
+        .footer {
+            margin-top: 40px;
+            padding: 20px 0;
+            text-align: center;
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-links {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: #cccccc;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 15px;
+            border: 1px solid #666666;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+            border-color: #888888;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-text p {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #aaaaaa;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .footer-links a {
+                display: block;
+                margin: 10px auto;
+                max-width: 200px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1079,7 +1134,7 @@
             if (confirm('Are you sure you want to reset your pet? This cannot be undone!')) {
                 localStorage.removeItem('tamagotchiPet');
                 pet = {
-                    name: 'Tama',
+                    name: '',
                     age: 0,
                     hunger: 50,
                     happiness: 50,
@@ -1125,8 +1180,47 @@
         setInterval(gameLoop, 60000); // Every minute
         setInterval(agePet, 300000); // Every 5 minutes (represents 1 day)
 
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            // Only trigger if no modal is open and no input is focused
+            if (document.getElementById('translationModal').style.display === 'flex' || 
+                document.activeElement.tagName === 'INPUT') {
+                return;
+            }
+            
+            const key = event.key.toLowerCase();
+            switch(key) {
+                case 'f':
+                    feedPet();
+                    break;
+                case 'p':
+                    playWithPet();
+                    break;
+                case 's':
+                    petSleep();
+                    break;
+                case 'h':
+                    healPet();
+                    break;
+            }
+        });
+
         // Save before page unload
         window.addEventListener('beforeunload', savePet);
     </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://x.com/Oquinn_mb" target="_blank" rel="noopener noreferrer">Follow on Twitter/X</a>
+                <a href="https://buymeacoffee.com/oakwin" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>
+            </div>
+            <div class="footer-text">
+                <p>Made by oakwin mostly for myself</p>
+                <p class="disclaimer">This is an educational tool. French translations may vary by context and tense, sorry.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
